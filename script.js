@@ -1,18 +1,10 @@
-﻿const micBtn = document.getElementById('mic-btn');
+const micBtn = document.getElementById('mic-btn');
 const aiText = document.getElementById('ai-text');
 
-let userName = ""; // user name save பண்ண
+let userName = ""; // User name capture
 
-const aiResponses = [
-    "ஓஹோ {name}! நீ வந்து விட்டியா 😎😂",
-    "{name}, உன்னை பார்த்து ரொம்ப சந்தோஷம்! 😆",
-    "{name}, இன்று super fun நாளா! 🎉",
-    "ஹேய் {name}! என்ன சிரிப்பு பண்ணுவாய் இப்போ? 😜",
-    "{name}, உன்னை பார்க்க நான் காத்திருப்பேன்! 😎"
-];
-
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-const recognition = new SpeechRecognition();
+// Speech recognition
+const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
 recognition.lang = 'ta-IN';
 
 micBtn.addEventListener('click', () => {
@@ -20,25 +12,46 @@ micBtn.addEventListener('click', () => {
     aiText.textContent = "🎤 கேட்கிறேன்...";
 });
 
-recognition.addEventListener('result', (e) => {
+// OpenAI API call
+async function getAIResponse(text) {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer YOUR_OPENAI_API_KEY" // உங்க API key
+        },
+        body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: [
+                { role: "system", content: "You are a fun Tamil AI for kids. Always reply in Tamil and include user's name if known." },
+                { role: "user", content: text }
+            ]
+        })
+    });
+    const data = await response.json();
+    return data.choices[0].message.content;
+}
+
+// Text-to-speech
+async function speakText(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'ta-IN';
+    utterance.pitch = 1.2;
+    utterance.rate = 1;
+    speechSynthesis.speak(utterance);
+}
+
+recognition.addEventListener('result', async (e) => {
     const userSpeech = e.results[0][0].transcript;
 
-    // name capture logic
+    // Name capture
     if(!userName) {
         const nameMatch = userSpeech.match(/பெயர் (\w+)/i);
         if(nameMatch) userName = nameMatch[1];
     }
 
-    // AI reply
-    const aiReplyTemplate = aiResponses[Math.floor(Math.random() * aiResponses.length)];
-    const aiReply = aiReplyTemplate.replace("{name}", userName || "தம்பி");
-
+    const aiReplyRaw = await getAIResponse(userSpeech);
+    const aiReply = aiReplyRaw.replace("{name}", userName || "தம்பி");
     aiText.textContent = aiReply;
-
-    // speak AI reply
-    const utterance = new SpeechSynthesisUtterance(aiReply);
-    utterance.lang = 'ta-IN';
-    utterance.pitch = 1.2;
-    utterance.rate = 1;
-    speechSynthesis.speak(utterance);
+    speakText(aiReply);
 });
