@@ -23,7 +23,7 @@ async function getAIResponse(text) {
         body: JSON.stringify({
             model: "gpt-4o-mini",
             messages: [
-                { role: "system", content: "You are a fun Tamil AI for kids. Always reply in Tamil, include user's name if known, and answer correctly. Keep it fun and simple." },
+                { role: "system", content: "You are a fun Tamil AI for kids. Always reply in Tamil, include user's name if known, and answer correctly. Make it fun and simple." },
                 { role: "user", content: text }
             ]
         })
@@ -44,13 +44,13 @@ async function speakText(text) {
 recognition.addEventListener('result', async (e) => {
     const userSpeech = e.results[0][0].transcript;
 
-    // Capture name
+    // Capture name if said
     if(!userName) {
         const nameMatch = userSpeech.match(/பெயர் (\w+)/i);
         if(nameMatch) userName = nameMatch[1];
     }
 
-    // Get AI response
+    // Get AI reply from GPT API
     const aiReplyRaw = await getAIResponse(userSpeech);
     const aiReply = aiReplyRaw.replace("{name}", userName || "தம்பி");
 
