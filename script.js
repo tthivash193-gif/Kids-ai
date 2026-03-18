@@ -18,7 +18,7 @@ async function getAIResponse(text) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer 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"
+            "Authorization": "Bearer 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"
         },
         body: JSON.stringify({
             model: "gpt-4o-mini",
