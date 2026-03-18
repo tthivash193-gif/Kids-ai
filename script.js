@@ -1,7 +1,7 @@
 const micBtn = document.getElementById('mic-btn');
 const aiText = document.getElementById('ai-text');
 
-let userName = ""; // User name capture
+let userName = ""; // capture user name
 
 // Speech recognition
 const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
@@ -18,12 +18,12 @@ async function getAIResponse(text) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer YOUR_OPENAI_API_KEY" // உங்க API key
+            "Authorization": "Bearer YOUR_OPENAI_API_KEY" // உங்கள் API key
         },
         body: JSON.stringify({
             model: "gpt-4o-mini",
             messages: [
-                { role: "system", content: "You are a fun Tamil AI for kids. Always reply in Tamil and include user's name if known." },
+                { role: "system", content: "You are a fun Tamil AI for kids. Always reply in Tamil, include user's name if known, and answer correctly. Keep it fun and simple." },
                 { role: "user", content: text }
             ]
         })
@@ -44,14 +44,16 @@ async function speakText(text) {
 recognition.addEventListener('result', async (e) => {
     const userSpeech = e.results[0][0].transcript;
 
-    // Name capture
+    // Capture name
     if(!userName) {
         const nameMatch = userSpeech.match(/பெயர் (\w+)/i);
         if(nameMatch) userName = nameMatch[1];
     }
 
+    // Get AI response
     const aiReplyRaw = await getAIResponse(userSpeech);
     const aiReply = aiReplyRaw.replace("{name}", userName || "தம்பி");
+
     aiText.textContent = aiReply;
     speakText(aiReply);
 });
