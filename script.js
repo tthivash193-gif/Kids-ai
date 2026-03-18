@@ -18,8 +18,7 @@ async function getAIResponse(text) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer YOUR_OPENAI_API_KEY" // <-- உங்கள் API key இங்கே போட்டு மாற்றுங்கள்
-        },
+            
         body: JSON.stringify({
             model: "gpt-4o-mini",
             messages: [
