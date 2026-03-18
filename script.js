@@ -18,7 +18,8 @@ async function getAIResponse(text) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            
+            "Authorization": "Bearer YOUR_OPENAI_API_KEY" // <-- Replace with your real OpenAI API key
+        },
         body: JSON.stringify({
             model: "gpt-4o-mini",
             messages: [
@@ -27,6 +28,7 @@ async function getAIResponse(text) {
             ]
         })
     });
+
     const data = await response.json();
     return data.choices[0].message.content;
 }
