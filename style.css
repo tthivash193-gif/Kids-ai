@@ -1,6 +1,6 @@
 body {
     font-family: 'Arial', sans-serif;
-    background: #fffae3;
+    background: #fff4e5;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -11,17 +11,17 @@ body {
 .container {
     text-align: center;
     background: #ffe5b4;
-    padding: 20px;
-    border-radius: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    max-width: 400px;
+    padding: 25px;
+    border-radius: 25px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    max-width: 450px;
 }
 
 button {
     padding: 15px 30px;
     font-size: 18px;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     background: #ff9800;
     color: white;
     cursor: pointer;
@@ -45,7 +45,7 @@ button:hover {
     border-radius: 15px;
 }
 
-#user-name {
+#user-name, #level-display {
     margin-top: 10px;
     font-weight: bold;
     color: #444;
