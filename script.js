@@ -2,14 +2,34 @@ const micBtn = document.getElementById('mic-btn');
 const aiText = document.getElementById('ai-text');
 const jokeImg = document.getElementById('joke-img');
 const userNameEl = document.getElementById('user-name');
+const levelDisplay = document.getElementById('level-display');
 
 let userName = "";
+let currentLevel = 0;
 
-// Tamil jokes array (text + image URL)
-const jokes = [
-    {text: "ஏன் ஆடு பஞ்சாயத்து பண்ணுது? 😂", img: "https://i.imgur.com/abc123.jpg"},
-    {text: "எதுக்கா சிங்கம் கோவில் போகுது? 😆", img: "https://i.imgur.com/def456.jpg"},
-    {text: "ஏன் நாய் பந்து விளையாடுது? 😜", img: "https://i.imgur.com/ghi789.jpg"}
+// Levels with jokes
+const levels = [
+    {
+        level: 1,
+        jokes: [
+            {text:"ஏன் கடல் தண்ணி உப்பாக இருக்கும்ன்னு தெரியுமா? 🌊😆", img:"https://i.imgur.com/sea_salt.jpg"},
+            {text:"ஏன் ஆடு பஞ்சாயத்து பண்ணுது? 😂", img:"https://i.imgur.com/goat_fun.jpg"}
+        ]
+    },
+    {
+        level: 2,
+        jokes: [
+            {text:"எதுக்கா சிங்கம் கோவில் போகுது? 😜", img:"https://i.imgur.com/lion_temple.jpg"},
+            {text:"ஏன் நாய் பந்து விளையாடுது? 🐶⚽", img:"https://i.imgur.com/dog_ball.jpg"}
+        ]
+    },
+    {
+        level: 3,
+        jokes: [
+            {text:"ஏன் பட்டம் பறக்குது? 🎈😂", img:"https://i.imgur.com/balloon_fun.jpg"},
+            {text:"ஏன் நண்டு கடலை அட்டாக் பண்ணுது? 🦀🌊", img:"https://i.imgur.com/crab_fun.jpg"}
+        ]
+    }
 ];
 
 // Speech recognition
@@ -42,15 +62,20 @@ recognition.addEventListener('result', async (e) => {
     }
     if(userName) userNameEl.textContent = "உங்கள் பெயர்: " + userName;
 
-    // Pick random joke
-    const randomJoke = jokes[Math.floor(Math.random() * jokes.length)];
+    // Get current level jokes
+    const level = levels[currentLevel];
+    const joke = level.jokes[Math.floor(Math.random() * level.jokes.length)];
 
-    // 5 seconds suspense
-    aiText.textContent = "⌛ 5 வினாடிகள் காத்திருக்க...";
+    // 5 sec suspense
+    aiText.textContent = "⌛ 5 வினாடிகள் காத்திரு...";
     setTimeout(() => {
-        aiText.textContent = randomJoke.text.replace("{name}", userName || "தம்பி");
-        jokeImg.src = randomJoke.img;
+        aiText.textContent = joke.text.replace("{name}", userName || "தம்பி");
+        jokeImg.src = joke.img;
         jokeImg.style.display = "block";
-        speakText(randomJoke.text.replace("{name}", userName || "தம்பி"));
+        speakText(joke.text.replace("{name}", userName || "தம்பி"));
+
+        // Next level update
+        currentLevel = (currentLevel + 1) % levels.length;
+        levelDisplay.textContent = "Level: " + (currentLevel + 1);
     }, 5000);
 });
