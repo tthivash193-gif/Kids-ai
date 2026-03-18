@@ -1,7 +1,16 @@
 const micBtn = document.getElementById('mic-btn');
 const aiText = document.getElementById('ai-text');
+const jokeImg = document.getElementById('joke-img');
+const userNameEl = document.getElementById('user-name');
 
-let userName = ""; // capture user name
+let userName = "";
+
+// Tamil jokes array (text + image URL)
+const jokes = [
+    {text: "ஏன் ஆடு பஞ்சாயத்து பண்ணுது? 😂", img: "https://i.imgur.com/abc123.jpg"},
+    {text: "எதுக்கா சிங்கம் கோவில் போகுது? 😆", img: "https://i.imgur.com/def456.jpg"},
+    {text: "ஏன் நாய் பந்து விளையாடுது? 😜", img: "https://i.imgur.com/ghi789.jpg"}
+];
 
 // Speech recognition
 const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
@@ -10,31 +19,11 @@ recognition.lang = 'ta-IN';
 micBtn.addEventListener('click', () => {
     recognition.start();
     aiText.textContent = "🎤 கேட்கிறேன்...";
+    jokeImg.style.display = "none";
 });
 
-// OpenAI API call
-async function getAIResponse(text) {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer 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"
-        },
-        body: JSON.stringify({
-            model: "gpt-4o-mini",
-            messages: [
-                { role: "system", content: "You are a fun Tamil AI for kids. Always reply in Tamil, include user's name if known, answer correctly, and make it funny & simple." },
-                { role: "user", content: text }
-            ]
-        })
-    });
-
-    const data = await response.json();
-    return data.choices[0].message.content;
-}
-
 // Text-to-speech
-async function speakText(text) {
+function speakText(text) {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'ta-IN';
     utterance.pitch = 1.2;
@@ -42,6 +31,7 @@ async function speakText(text) {
     speechSynthesis.speak(utterance);
 }
 
+// Recognition result
 recognition.addEventListener('result', async (e) => {
     const userSpeech = e.results[0][0].transcript;
 
@@ -50,11 +40,17 @@ recognition.addEventListener('result', async (e) => {
         const nameMatch = userSpeech.match(/பெயர் (\w+)/i);
         if(nameMatch) userName = nameMatch[1];
     }
+    if(userName) userNameEl.textContent = "உங்கள் பெயர்: " + userName;
 
-    // Get AI reply from GPT API
-    const aiReplyRaw = await getAIResponse(userSpeech);
-    const aiReply = aiReplyRaw.replace("{name}", userName || "தம்பி");
+    // Pick random joke
+    const randomJoke = jokes[Math.floor(Math.random() * jokes.length)];
 
-    aiText.textContent = aiReply;
-    speakText(aiReply);
+    // 5 seconds suspense
+    aiText.textContent = "⌛ 5 வினாடிகள் காத்திருக்க...";
+    setTimeout(() => {
+        aiText.textContent = randomJoke.text.replace("{name}", userName || "தம்பி");
+        jokeImg.src = randomJoke.img;
+        jokeImg.style.display = "block";
+        speakText(randomJoke.text.replace("{name}", userName || "தம்பி"));
+    }, 5000);
 });
